@@ -19,4 +19,13 @@ func SetupRoutes(r *gin.Engine) {
 		api.GET("/dashboard", controllers.Dashboard)
 		// Add more protected routes here
 	}
+	masterapi := r.Group("/master")
+	masterapi.Use(middleware.JWTAuthMiddleware())
+	{
+		masterapi.GET("/categories", controllers.GetAllCategories)
+		masterapi.GET("/categories/:id", controllers.GetCategoryById)
+		masterapi.POST("/categories", controllers.CreateCategory)
+		masterapi.PUT("/categories/:id", controllers.UpdateCategory)
+		masterapi.DELETE("/categories/:id", controllers.DeleteCategory)
+	}
 }

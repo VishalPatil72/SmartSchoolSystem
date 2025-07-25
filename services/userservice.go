@@ -10,7 +10,7 @@ import (
 	"smartschoolsystem.go/utils"
 )
 
-func AuthenticateUser(email, password string) (string, error) {
+func AuthenticateUser(username, password string) (string, error) {
 	dsn := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASSWORD") +
 		"@tcp(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" +
 		os.Getenv("DB_NAME")
@@ -22,10 +22,10 @@ func AuthenticateUser(email, password string) (string, error) {
 	defer db.Close()
 
 	var storedPwd, role string
-	err = db.QueryRow("SELECT password, role FROM userlogin WHERE email = ?", email).Scan(&storedPwd, &role)
+	err = db.QueryRow("SELECT password, role FROM userlogin WHERE username = ? and isactive=1", username).Scan(&storedPwd, &role)
 	if err != nil || storedPwd != password {
 		return "", errors.New("invalid credentials")
 	}
 
-	return utils.GenerateJWT(email, role)
+	return utils.GenerateJWT(username, role)
 }
