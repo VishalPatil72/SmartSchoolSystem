@@ -18,7 +18,7 @@ func GetAllCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, categories)
 }
 func GetCategoryById(c *gin.Context) {
-	categoryId := c.Param("id")
+	categoryId := c.Param("categoryId")
 
 	idInt, err := strconv.Atoi(categoryId)
 	if err != nil {
@@ -59,7 +59,7 @@ func UpdateCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Category updated successfully"})
 }
 func DeleteCategory(c *gin.Context) {
-	categoryId := c.Param("id")
+	categoryId := c.Param("categoryId")
 	idInt, err := strconv.Atoi(categoryId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid category ID"})
