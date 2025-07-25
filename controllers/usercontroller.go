@@ -11,16 +11,22 @@ import (
 
 func Login(c *gin.Context) {
 	var creds struct {
-		Email    string `json:"email"`
+		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 
-	if err := c.BindJSON(&creds); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+	if err := c.ShouldBindJSON(&creds); err != nil {
+		var raw map[string]interface{}
+		c.BindJSON(&raw) // force parse and show what was received
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid input",
+			"raw":   raw,
+			"note":  "Expected: username/password lowercase keys",
+		})
 		return
 	}
 
-	token, err := services.AuthenticateUser(creds.Email, creds.Password)
+	token, err := services.AuthenticateUser(creds.Username, creds.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
