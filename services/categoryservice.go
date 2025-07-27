@@ -23,50 +23,40 @@ func GetAllCategories() ([]models.Category, error) {
 	}
 	return categories, nil
 }
-func GetCategoryById(categoryId uint) (models.Category, error) {
+func GetSubCategories() ([]models.SubCategory, error) {
 	db := database.InitMySQL()
-	var c models.Category
+	rows, err := db.Query("SELECT subCategoryId, subCategoryName, categoryId FROM subcategorymaster")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-	err := db.QueryRow(("SELECT categoryId, categoryName FROM categorymaster WHERE categoryId = ?"), categoryId).Scan(&c.CategoryID, &c.CategoryName)
-	if err != nil {
-		return models.Category{}, err
+	var subCategories []models.SubCategory
+	for rows.Next() {
+		var sc models.SubCategory
+		if err := rows.Scan(&sc.SubCategoryID, &sc.SubCategoryName, &sc.CategoryID); err != nil {
+			return nil, err
+		}
+		subCategories = append(subCategories, sc)
 	}
-	return c, nil
+	return subCategories, nil
+
 }
-func CreateCategory(category models.Category) (uint, error) {
+func GetAllReligions() ([]models.Religion, error) {
 	db := database.InitMySQL()
-	qry := `INSERT INTO categorymaster
-				( 
-				categoryName
-				)
-				values(?)`
-	result, err := db.Exec(qry, category.CategoryName)
+	rows, err := db.Query("SELECT religionId, religionName FROM religionmaster")
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	lastInsertId, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
+	defer rows.Close()
+
+	var religions []models.Religion
+	for rows.Next() {
+		var r models.Religion
+		if err := rows.Scan(&r.ReligionID, &r.ReligionName); err != nil {
+			return nil, err
+		}
+		religions = append(religions, r)
 	}
-	return uint(lastInsertId), nil
-}
-func UpdateCategory(category models.Category) error {
-	db := database.InitMySQL()
-	qry := `UPDATE categorymaster
-				SET categoryName = ?		
-				WHERE categoryId = ?`
-	_, err := db.Exec(qry, category.CategoryName, category.CategoryID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func DeleteCategory(categoryId uint) error {
-	db := database.InitMySQL()
-	qry := `DELETE FROM categorymaster WHERE categoryId = ?`
-	_, err := db.Exec(qry, categoryId)
-	if err != nil {
-		return err
-	}
-	return nil
+	return religions, nil
 }
