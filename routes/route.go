@@ -24,11 +24,9 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		// category
 		masterapi.GET("/categories", controllers.GetAllCategories)
-		masterapi.GET("/categories/:id", controllers.GetCategoryById)
-		masterapi.POST("/categories", controllers.CreateCategory)
-		masterapi.PUT("/categories/:id", controllers.UpdateCategory)
-		masterapi.DELETE("/categories/:id", controllers.DeleteCategory)
-		// class
+		masterapi.GET("/subcategories", controllers.GetSubCategories)
+		masterapi.GET("/religions", controllers.GetAllReligions)
+
 		masterapi.GET("/classes", controllers.GetAllClasses)
 		masterapi.GET("/classes/:classId", controllers.GetClassById)
 		masterapi.POST("/classes", controllers.CreateClass)
@@ -47,5 +45,14 @@ func SetupRoutes(r *gin.Engine) {
 		masterapi.PUT("/subjects/:subjectId", controllers.UpdateSubject)
 		masterapi.DELETE("/subjects/:subjectId", controllers.DeleteSubject)
 
+	}
+	regapi := r.Group("/registration")
+	regapi.Use(middleware.JWTAuthMiddleware())
+	{
+		regapi.GET("/student", controllers.GetAllStudents)
+		regapi.GET("/student/:student_id", controllers.GetStudentById)
+		regapi.POST("/student", controllers.CreateStudent)
+		regapi.PUT("/student/:student_id", controllers.UpdateStudent)
+		regapi.DELETE("/student/:student_id", controllers.DeleteStudent)
 	}
 }
